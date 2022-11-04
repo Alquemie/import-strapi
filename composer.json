@@ -9,12 +9,13 @@
         }
     ],
     "license": "GPL-3.0+",
-    "type": "wordpress-muplugin",
+    "type": "wordpress-plugin",
     "config": {
         "vendor-dir": "lib"
     },
     "require": {
-        "league/commonmark": "^2.3",
-        "woocommerce/action-scheduler": "^3.5"
+        "php": "^7.4 || ^8.0",
+        "woocommerce/action-scheduler": "^3.5",
+        "erusev/parsedown": "^1.7"
     }
 }

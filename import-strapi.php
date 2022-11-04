@@ -2,7 +2,7 @@
 /*
 Plugin Name: Import Strapi
 Description: Pull content from Strapi API to WP Post
-Version: 0.4.12
+Version: 0.4.18
 Author: Chris Carrel
 Author URI: https://www.linkedin.com/in/chriscarrel
 License:     GPL3
@@ -34,6 +34,8 @@ if ( !defined('ABSPATH') ) {
 }
 
 define ('STRAPI_IMPORT_PLUGIN_PATH', dirname( __FILE__ ));
+
+require __DIR__ . '/lib/autoload.php';
 
 if ( ! class_exists( 'Import_Strapi' ) ) :
 	/**

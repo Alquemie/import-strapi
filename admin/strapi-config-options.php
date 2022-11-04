@@ -266,20 +266,46 @@ class Strapi_Config_Settings_Page {
 		if ($entryId != 0) {
 			// Lookup Entry from Strapi
 			$entry = $this->lookupStrapiEntry($entryId);
+			$html = "";
+
+			// Loop content sections
 			foreach($entry['attributes']['contentSections'] as $section) {
-				echo "Section: " . $section['__component'];
+				// echo "Section: " . $section['__component'];
+
+				// if RichText
+				if ( $section['__component'] == 'sections.rich-text' ) {
+					$html .= $this->buildRichText($section);
+				}
+				// if Trustpilot
+				if ( $section['__component'] == 'sections.trustpilot-carousel' ) {
+					$html .= $this->buildTrustPilot($section);
+				}
+				// if Youtube
+				if ( $section['__component'] == 'sections.youtube-video' ) {
+					$html .= $this->buildYouTube($section);
+				}
 			}
 
 			// echo "<pre>" . print_r($entry, true) . "</pre>";
-			// Loop content sections
-				// if RichText
-					// Convert Markdown to HTML
-				// if Youtube
-				// if Trustpilot
-
-			
-			// Create WP Post
-			// 
+				
+			// Create post object
+			$the_post = array(
+				'ID' => 0,
+				'post_date_gmt' => $entry['attributes']['publishedAt'],
+				'post_title'    => wp_strip_all_tags( $entry['attributes']['shortName'] ),
+				'post_name' => $entry['attributes']['slug'],
+				'post_content'  => $html,
+				'post_excerpt'  => $entry['attributes']['summary'],
+				'post_type'  => get_option('strapiport-wp-type'),
+				'post_status'   => 'publish',
+				'post_author'   => 1,
+				'post_category' => array( )
+			);
+  
+			// Insert the post into the database
+			wp_insert_post( $the_post );
+			echo $html;
+			 
 		}
 	}
 
@@ -322,15 +348,45 @@ class Strapi_Config_Settings_Page {
 	}
 
 	private function buildRichText($section) {
+		$copy = "";
 
+		// Remove old blog disclaimer image
+		if (strpos($section['content'],"Information about our blog posts") === false) {
+			$Parsedown = new Parsedown();
+
+			$copy = $Parsedown->text($section['content']);
+		}
+		
+		return $copy;
 	}
 
 	private function buildYouTube($section) {
+		$videoId = $section['videoId'];
+		$title = $section['description'];
 
+		return "
+<section class=\"un-youtube un-section-element\" id=\"un-youtube-block_$videoId\">
+<div class=\"un-youtube__container\">
+<figure class=\"wp-block-embed is-type-video is-provider-youtube wp-block-embed-youtube wp-embed-aspect-16-9 wp-has-aspect-ratio\"><div class=\"wp-block-embed__wrapper\">
+<iframe title=\"$title\" width=\"500\" height=\"281\" src=\"https://www.youtube.com/embed/$videoId?feature=oembed\" frameborder=\"0\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture\" allowfullscreen></iframe>
+</div></figure>
+</div>
+</section>
+";
+		
 	}
 
 	private function buildTrustPilot($section) {
-
+		return 
+		"
+<section class=\"un-trust-pilot un-section-element\" id=\"un-trust-pilot-block_93b8ec2adf34eccf61e388ed91a3d67a\">
+<div class=\"un-trust-pilot__container\">
+<!-- TrustBox widget - Carousel -->
+    <div class=\"trustpilot-widget\" data-locale=\"en-US\" data-template-id=\"53aa8912dec7e10d38f59f36\" data-businessunit-id=\"6094b9c2f2dca5000188536a\" data-style-height=\"140px\" data-style-width=\"100%\" data-theme=\"light\" data-stars=\"3,4,5\" data-review-languages=\"en\" style=\"position: relative;\"><iframe title=\"Customer reviews powered by Trustpilot\" loading=\"auto\" src=\"https://widget.trustpilot.com/trustboxes/53aa8912dec7e10d38f59f36/index.html?templateId=53aa8912dec7e10d38f59f36&amp;businessunitId=6094b9c2f2dca5000188536a#locale=en-US&amp;styleHeight=140px&amp;styleWidth=100%25&amp;theme=light&amp;stars=3%2C4%2C5&amp;reviewLanguages=en\" style=\"position: relative; height: 140px; width: 100%; border-style: none; display: block; overflow: hidden;\"></iframe></div>
+<!-- End TrustBox widget -->
+</div>
+</section>
+";
 	}
 
 }
