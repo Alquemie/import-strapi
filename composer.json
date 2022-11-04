@@ -1,0 +1,20 @@
+{
+    "name": "alquemie/import-strapi",
+    "description": "Import content from Strapi headless CMS",
+    "version": "0.4",
+    "authors": [
+        {
+            "name": "Chris Carrel",
+            "email": "support@alquemie.net"
+        }
+    ],
+    "license": "GPL-3.0+",
+    "type": "wordpress-muplugin",
+    "config": {
+        "vendor-dir": "lib"
+    },
+    "require": {
+        "league/commonmark": "^2.3",
+        "woocommerce/action-scheduler": "^3.5"
+    }
+}
