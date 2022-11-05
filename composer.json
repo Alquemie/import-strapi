@@ -1,7 +1,7 @@
 {
     "name": "alquemie/import-strapi",
     "description": "Import content from Strapi headless CMS",
-    "version": "0.4",
+    "version": "1.0",
     "authors": [
         {
             "name": "Chris Carrel",

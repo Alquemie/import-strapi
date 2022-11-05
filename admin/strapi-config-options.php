@@ -316,12 +316,18 @@ class Strapi_Config_Settings_Page {
 				'post_excerpt'  => $entry['attributes']['summary'],
 				'post_type'  => get_option('strapiport-wp-type'),
 				'post_status'   => 'publish',
-				'post_author'   => 1,
+				'post_author'   => 1,  // Add Author Lookup
 				'post_category' => array( )
 			);
   
 			// Insert the post into the database
-			wp_insert_post( $the_post );
+			$pid = wp_insert_post( $the_post );
+
+			// Insert Meta Description and Title if available
+			if ($pid) {
+				if (isset( $entry['attributes']['metadata']['metaDescription'] ) ) update_post_meta( $pid, '_genesis_description', $entry['attributes']['metadata']['metaDescription'] );
+				if (isset( $entry['attributes']['metadata']['metaTitle'] ) ) update_post_meta( $pid, '_genesis_title', $entry['attributes']['metadata']['metaTitle'] );
+			}
 			echo $html;
 			 
 		}
@@ -379,6 +385,22 @@ class Strapi_Config_Settings_Page {
 	}
 
 	private function buildYouTube($section) {
+		$videoId = $section['videoId'];
+		$title = $section['description'];
+
+		return "
+<!-- wp:group {\"className\":\"un-youtube un-section-element\",\"layout\":{\"type\":\"constrained\"}} -->
+<div id=\"un-youtube-block_$videoId\" class=\"wp-block-group un-youtube__container\">
+<!-- wp:embed {\"url\":\"https://www.youtube.com/embed/$videoId\",\"type\":\"rich\",\"providerNameSlug\":\"embed-handler\",\"responsive\":true,\"className\":\"wp-embed-aspect-16-9 wp-has-aspect-ratio\"} -->
+<figure class=\"wp-block-embed is-type-rich is-provider-embed-handler wp-block-embed-embed-handler wp-embed-aspect-16-9 wp-has-aspect-ratio\"><div class=\"wp-block-embed__wrapper\">
+https://www.youtube.com/embed/$videoId
+</div><figcaption class=\"wp-element-caption\">$title</figcaption></figure>
+<!-- /wp:embed --></div>
+<!-- /wp:group -->
+		";
+	}
+
+	private function buildYouTubeOrig($section) {
 		$videoId = $section['videoId'];
 		$title = $section['description'];
 

@@ -1,8 +1,8 @@
 <?php return array(
     'root' => array(
         'name' => 'alquemie/import-strapi',
-        'pretty_version' => '0.4',
-        'version' => '0.4.0.0',
+        'pretty_version' => '1.0',
+        'version' => '1.0.0.0',
         'reference' => NULL,
         'type' => 'wordpress-plugin',
         'install_path' => __DIR__ . '/../../',
@@ -11,8 +11,8 @@
     ),
     'versions' => array(
         'alquemie/import-strapi' => array(
-            'pretty_version' => '0.4',
-            'version' => '0.4.0.0',
+            'pretty_version' => '1.0',
+            'version' => '1.0.0.0',
             'reference' => NULL,
             'type' => 'wordpress-plugin',
             'install_path' => __DIR__ . '/../../',
