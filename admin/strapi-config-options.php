@@ -49,33 +49,38 @@ class Strapi_Config_Settings_Page {
 	public function strapi_content() { ?>
 		<div class="wrap">
 			<h1>Strapi Import</h1>
-
+			<p>This tool is used to import Strapi Headless CMS entries into WordPress.  It is primarly designed for site migrations, but could be modified for headless content management.</p> 
 			<?php 
 			if ( ! empty( $_POST ) && check_admin_referer( 'strapi_import_action', 'strapiport_nonce' ) ) {
 				// process form data, e.g. update fields
 				if ($_POST['allentries'] == 1) {
 					// Call Import All Job
-					echo "as_enqueue_async_action( 'import_all_strapi_asap' );<p>";
+					// echo "as_enqueue_async_action( 'import_all_strapi_asap' );<p>";
+					echo "<h3>Full Import Running...</h3>";
+					as_enqueue_async_action( 'import_all_strapi_asap' );
 				} else {
+					echo "<h3>Selected Import Running...</h3>";
 					foreach($_POST['strapient'] as $eId) {
-						echo "as_enqueue_async_action( 'import_entry_asap', " . $eId . " );<p>";
-						$this->importEntry($eId);
+						// echo "as_enqueue_async_action( 'import_entry_asap', " . $eId . " );<p>";
+						as_enqueue_async_action( 'import_entry_asap',  [ $eId ]);
+						// $this->importEntry($eId);
 					}
 						
 				}
 
 			 }
 			?>
+			<h3>Select Entries</h3>
 			<form method="POST"> <?php /* action="<?php echo $_SERVER['PHP_SELF']; ?>?page=strapi_import"> */ ?>
 				<?php 
 				$pageNum = (is_numeric($_GET['start'])) ? $_GET['start'] : 1;
 
 				$blog = $this->getStrapi($pageNum,40);
 				if (is_array($blog)) {
-					echo "<p>There are " . $blog['meta']['pagination']['total'] . " entries on Strapi server.</p>";
+					
 					?>
 					<p>
-						<input type="radio" name="allentries" value="1" onClick="toggleEntries();">All Entries<br />
+						<input type="radio" name="allentries" value="1" onClick="toggleEntries();">Import Everything (<?php echo $blog['meta']['pagination']['total'] . " entries"; ?>)<br />
 						<input type="radio" name="allentries" value="0" checked=1 onClick="toggleEntries();">Selected Entries
 					</p>
 					<div id="entrylist">
@@ -124,9 +129,11 @@ class Strapi_Config_Settings_Page {
     			<input type="submit" value="Import Entries" class="button button-primary button-large">
 			</form>
 			<?php 
+			/*
 			echo "<pre>";
 			print_r($_POST);
 			echo "</pre>";
+			*/
 			?>
 		</div> <?php
 	}
@@ -258,7 +265,18 @@ class Strapi_Config_Settings_Page {
 
 	public function scheduleImport() {
 		// Loop through all Strapi Entries and schedule individual import job
+		$thisPg = 1;
+		$entries = $this->getStrapi($thisPg, 50);
+		$lastPg = $entries['meta']['pagination']['pageCount'];
+		while ($thisPg <= $lastPg) {
+			
+			foreach($entries['data'] as $entry) {
+				as_enqueue_async_action( 'import_entry_asap',  [ $entry['id'] ]);
+			}
 
+			$thisPg++;
+			$entries = $this->getStrapi($thisPg, 50);
+		}
 
 	}
 
@@ -351,7 +369,7 @@ class Strapi_Config_Settings_Page {
 		$copy = "";
 
 		// Remove old blog disclaimer image
-		if (strpos($section['content'],"Information about our blog posts") === false) {
+		if ( (strpos($section['content'],"Information about our blog") === false) && (strpos($section['content'],"Information about the blog") === false) ) {
 			$Parsedown = new Parsedown();
 
 			$copy = $Parsedown->text($section['content']);
