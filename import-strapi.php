@@ -2,7 +2,7 @@
 /*
 Plugin Name: Import Strapi
 Description: Pull content from Strapi API to WP Post
-Version: 0.4.22
+Version: 0.5.00
 Author: Chris Carrel
 Author URI: https://www.linkedin.com/in/chriscarrel
 License:     GPL3
@@ -55,12 +55,52 @@ if ( ! class_exists( 'Import_Strapi' ) ) :
 		}
 
 		private static function hooks() {
- 
+            add_filter( 'wp_kses_allowed_html', array($this, 'esw_author_cap_filter') ,1,1 );
 		}
         
+        public function esw_author_cap_filter( $allowedposttags ) {
+
+            //Here put your conditions, depending your context
+            if ( !current_user_can( 'publish_posts' ) )
+            return $allowedposttags;
+            
+            // Here add tags and attributes you want to allow
+            
+            $allowedposttags['iframe']=array(
+                'align' => true,
+                'width' => true,
+                'height' => true,
+                'frameborder' => true,
+                'name' => true,
+                'src' => true,
+                'id' => true,
+                'class' => true,
+                'style' => true,
+                'scrolling' => true,
+                'loading' => true,
+                'marginwidth' => true,
+                'marginheight' => true,
+                'allowfullscreen' => true, 
+                'mozallowfullscreen' => true, 
+                'webkitallowfullscreen' => true,
+            );
+
+            $allowedposttags['script']=array(
+                'async' => true,
+                'crossorigin' => true,
+                'defer' => true,
+                'integrity' => true,
+                'nomodule' => true,
+                'src' => true,
+                'type' => true,
+                'referrerpolicy' => true,
+            );
+
+            return $allowedposttags;
+            
+        } 
 	}
 
    new Import_Strapi();
 
 endif;
-
