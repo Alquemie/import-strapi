@@ -2,7 +2,7 @@
 /*
 Plugin Name: Import Strapi
 Description: Pull content from Strapi API to WP Post
-Version: 0.5.00
+Version: 0.6.0
 Author: Chris Carrel
 Author URI: https://www.linkedin.com/in/chriscarrel
 License:     GPL3
@@ -45,8 +45,9 @@ if ( ! class_exists( 'Import_Strapi' ) ) :
         private $_settings = array();
         
 		public function __construct() {
-			self::includes();
+            self::includes();
 			self::hooks();
+
 		}
 
 		private static function includes() {
@@ -55,36 +56,37 @@ if ( ! class_exists( 'Import_Strapi' ) ) :
 		}
 
 		private static function hooks() {
-            add_filter( 'wp_kses_allowed_html', array($this, 'esw_author_cap_filter') ,1,1 );
+            add_filter( 'wp_kses_allowed_html', array(__CLASS__, 'allow_iframes'), 1 );
 		}
         
-        public function esw_author_cap_filter( $allowedposttags ) {
+        public static function allow_iframes( $allowedposttags ){
 
-            //Here put your conditions, depending your context
-            if ( !current_user_can( 'publish_posts' ) )
-            return $allowedposttags;
-            
-            // Here add tags and attributes you want to allow
-            
-            $allowedposttags['iframe']=array(
+            $allowedposttags['iframe'] = array(
                 'align' => true,
-                'width' => true,
-                'height' => true,
-                'frameborder' => true,
-                'name' => true,
-                'src' => true,
-                'id' => true,
+                'allow' => true,
+                'allowfullscreen' => true,
                 'class' => true,
-                'style' => true,
-                'scrolling' => true,
-                'loading' => true,
-                'marginwidth' => true,
+                'frameborder' => true,
+                'height' => true,
+                'id' => true,
                 'marginheight' => true,
-                'allowfullscreen' => true, 
-                'mozallowfullscreen' => true, 
-                'webkitallowfullscreen' => true,
+                'marginwidth' => true,
+                'name' => true,
+                'scrolling' => true,
+                'src' => true,
+                'style' => true,
+                'width' => true,
+                'allowFullScreen' => true,
+                'class' => true,
+                'frameborder' => true,
+                'height' => true,
+                'mozallowfullscreen' => true,
+                'src' => true,
+                'title' => true,
+                'webkitAllowFullScreen' => true,
+                'width' => true
             );
-
+        
             $allowedposttags['script']=array(
                 'async' => true,
                 'crossorigin' => true,
@@ -97,8 +99,8 @@ if ( ! class_exists( 'Import_Strapi' ) ) :
             );
 
             return $allowedposttags;
-            
-        } 
+        }
+        
 	}
 
    new Import_Strapi();
