@@ -1,6 +1,6 @@
 # Import Strapi Plugin
 
-Allows for the import of entries from Strapi Headless CMS(https://strapi.io/)
+Allows for the import of entries from [Strapi Headless CMS](https://strapi.io/)
 
 ## Description
 
