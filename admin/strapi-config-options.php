@@ -417,6 +417,10 @@ https://www.youtube.com/embed/$videoId
 	}
 
 	private function buildTrustPilot($section) {
+		return "<!-- wp:acf/trust-pilot {\"name\":\"acf/trust-pilot\",\"data\":{},\"mode\":\"preview\"} /-->";
+	}
+	
+	private function buildTrustPilotOrig($section) {
 		return 
 		"
 <section class=\"un-trust-pilot un-section-element\" id=\"un-trust-pilot-block_93b8ec2adf34eccf61e388ed91a3d67a\">
